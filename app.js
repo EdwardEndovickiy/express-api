@@ -1,7 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
 
 var app = express();
+var db
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -58,6 +60,14 @@ app.delete('/item/:id', function (req, res) {
   res.sendStatus(200);
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+
+
+MongoClient.connect('mongodb://localhost:27017/api', function (err, database) {
+  if (err) {
+    return console.log(err);
+  }
+  db = database;
+  app.listen(3000, function () {
+    console.log('App listening on port 3000');
+  });
 });
