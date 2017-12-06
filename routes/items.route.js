@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
+var itemsController = require('../controllers/items.controller');
 
 var db = require('../middlewares/db');
 
@@ -16,69 +17,18 @@ router.get('/', function(req, res) {
 });
 
 //get all items
-router.get('/items', function(req, res) {
-  db.get().collection('items').find().toArray(function(err, items) {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    res.send(items);
-  });
-});
+router.get('/items', itemsController.all);
 
 //get item by id
-router.get('/item/:id', function(req, res) {
-  db.get().collection('items').findOne({_id: ObjectId(req.params.id)}, function(err, item) {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    res.send(item);
-  })
-});
+router.get('/item/:id', itemsController.findById);
 
 //post new item
-router.post('/item', function(req, res) {
-  var item = {
-    name: req.body.name
-  };
-
-  db.get().collection('items').insert(item, function(err, result) {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    res.send(item);
-  });
-});
+router.post('/item', itemsController.create);
 
 //put change item by id
-router.put('/item/:id', function(req, res) {
-  db.get().collection('items').updateOne(
-    { _id: ObjectId(req.params.id) },
-    { name: req.body.name },
-    function(err, result) {
-      if (err) {
-        console.log(err);
-        return res.sendStatus(500);
-      }
-      res.sendStatus(200);
-    }
-  )
-});
+router.put('/item/:id', itemsController.update);
 
 //delete item by id
-router.delete('/item/:id', function(req, res) {
-  db.get().collection('items').deleteOne(
-    {_id: ObjectId(req.params.id)},
-    function(err, result) {
-      if (err) {
-        console.log(err);
-        return res.sendStatus(500);
-      }
-      res.sendStatus(200);
-    }
-  )
-});
+router.delete('/item/:id', itemsController.delete);
 
 module.exports = router;
